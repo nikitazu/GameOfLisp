@@ -33,8 +33,8 @@
      (sdl:update-display)))))
 
 (defun init-settings ()
-  (setf *pixel-size* 600)
-  (setf *cells-count* 100)
+  (setf *pixel-size* 1000)
+  (setf *cells-count* 150)
   (setf *cell-size* (/ *pixel-size* *cells-count*))
   (setf *matrix* (matrix-create *cells-count*))
   (setf *old-matrix* (matrix-create *cells-count*))
@@ -61,14 +61,24 @@
 		     'left-empty))))
 	   *cells-count*))
 
-(defun game-count-alive (x0 y0)
-  (let ((alive-count 0))
-    (iterate-near #'(lambda (x y)
-		      (when (matrix-get *old-matrix* x y)
-			(setf alive-count (add1 alive-count))))
-		  x0
-		  y0)
-    alive-count))
+(defun game-count-alive (x1 y1)
+  (let ((x0 (sub1 x1))
+	(x2 (add1 x1))
+	(y0 (sub1 y1))
+	(y2 (add1 y1)))
+    (+ (matrix-get-alive-as-number x0 y0)
+       (matrix-get-alive-as-number x0 y1)
+       (matrix-get-alive-as-number x0 y2)
+       (matrix-get-alive-as-number x2 y0)
+       (matrix-get-alive-as-number x2 y1)
+       (matrix-get-alive-as-number x2 y2)
+       (matrix-get-alive-as-number x1 y0)
+       (matrix-get-alive-as-number x1 y2))))
+
+(defun matrix-get-alive-as-number (x y)
+  (if (matrix-get *old-matrix* x y)
+      1
+    0))
 
 (defun update-old-matrix ()
   (iterate #'(lambda (x y)
@@ -110,21 +120,6 @@
     (loop for x from 0 to bounds
 	  do (loop for y from 0 to bounds
 		   do (funcall f x y)))))
-
-(defun iterate-near (f x y)
-  (let ((x0 (sub1 x))
-	(x2 (add1 x))
-	(y0 (sub1 y))
-	(y2 (add1 y)))
-    (funcall f x0 y0)
-    (funcall f x0 y)
-    (funcall f x0 y2)
-    (funcall f x2 y0)
-    (funcall f x2 y)
-    (funcall f x2 y2)
-    (funcall f x y0)
-    (funcall f x y2))
-  nil)
 
 (defun matrix-get (m x y)
   (elt (elt m
