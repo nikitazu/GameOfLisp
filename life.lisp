@@ -30,7 +30,7 @@
     (:key-down-event () (sdl:push-quit-event))
     (:idle
      ()
-     (matrix-copy *matrix* *old-matrix* *cells-count*)
+     (matrix-copy *matrix* *old-matrix*)
      (game-step)
      (sdl:update-display)))))
 
@@ -52,7 +52,7 @@
 
 (defun game-step ()
   (iterate #'(lambda (x y)
-	       (let ((count (cell-count-alive x y *cells-count*))
+	       (let ((count (cell-count-alive *old-matrix* x y))
 		     (old-state (matrix-get *old-matrix* x y)))
 		 (unless (cell-is-stable old-state count)
 		   (let ((new-state (not old-state)))

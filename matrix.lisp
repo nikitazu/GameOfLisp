@@ -2,14 +2,16 @@
 ;;; ======
 
 (defstruct matrix
-  (items))
+  items
+  size)
 
 (defun matrix-create (size)
   (let ((matrix (make-array size))
 	(bounds (sub1 size)))
     (loop for x from 0 to bounds
 	  do (push (make-array size) matrix))
-    (make-matrix :items matrix)))
+    (make-matrix :items matrix
+		 :size size)))
 
 (defun matrix-get (m x y)
   (elt (elt (matrix-items m) x) y))
@@ -17,19 +19,20 @@
 (defun matrix-set (m x y v)
   (setf (elt (elt (matrix-items m) x) y) v))
 
-(defun matrix-copy (m1 m2 count)
+(defun matrix-copy (m1 m2)
   (iterate #'(lambda (x y)
 	       (matrix-set m2
 			   x y
 			   (matrix-get m1 x y)))
-	   count))
+	   (matrix-size m1)))
 
-(defun matrix-translate (x count)
-  (if (= x count)
-      0
-    (if (= x -1)
-	(sub1 count)
-      x)))
+(defun matrix-translate (m x)
+  (let ((s (matrix-size m)))
+    (if (= x s)
+	0
+      (if (= x -1)
+	  (sub1 s)
+	x))))
 
 ;;; Utils
 ;;; =====
