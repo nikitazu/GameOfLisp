@@ -1,8 +1,8 @@
 ;;; Matrix
 ;;; ======
 
-(defclass matrix ()
-  ((items :accessor matrix-items)))
+(defstruct matrix
+  (items))
 
 (defun matrix-create (size)
   (let ((matrix (make-array size))
