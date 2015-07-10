@@ -7,6 +7,7 @@
 (defvar *cells-count* nil)
 (defvar *cell-size* nil)
 (defvar *matrix* nil)
+(defvar *old-matrix* nil)
 (defvar *dead-color* nil)
 (defvar *alive-color* nil)
 
@@ -32,12 +33,12 @@
 
 (defun init-settings ()
   (setf *pixel-size* 600)
-  (setf *cells-count* 200)
+  (setf *cells-count* 100)
   (setf *cell-size* (/ *pixel-size* *cells-count*))
   (setf *matrix* (matrix-create *cells-count*))
-  (matrix-iterate #'(lambda (x y)
-		      (matrix-set x y (= (random 2) 0)))
-		  *cells-count*)
+  (iterate #'(lambda (x y)
+	       (matrix-set *matrix* x y (= (random 2) 0)))
+	   *cells-count*)
   (setf *dead-color* (sdl:color :r 255 :g 0 :b 0))
   (setf *alive-color* (sdl:color :r 0 :g 0 :b 0)))
 
@@ -46,34 +47,34 @@
 ;;; ============
 
 (defun game-step ()
-  (matrix-iterate #'(lambda (x y)
-		      (let ((count (game-count-alive x y))
-			    (alive (matrix-get x y)))
-			(if alive
-			    (if (or (= count 2) (= count 3))
-				'survives
-			      (matrix-set x y nil))
-			  (if (= count 3)
-			      (matrix-set x y t)
-			    'left-empty))))
-		  *cells-count*))
+  (iterate #'(lambda (x y)
+	       (let ((count (game-count-alive x y))
+		     (alive (matrix-get *matrix* x y)))
+		 (if alive
+		     (if (or (= count 2) (= count 3))
+			 'survives
+		       (matrix-set *matrix* x y nil))
+		   (if (= count 3)
+		       (matrix-set *matrix* x y t)
+		     'left-empty))))
+	   *cells-count*))
 
 (defun game-count-alive (x0 y0)
   (let ((alive-count 0))
-    (matrix-iterate-near #'(lambda (x y)
-			     (when (matrix-get x y)
-			       (setf alive-count (add1 alive-count))))
-			 x0
-			 y0)
+    (iterate-near #'(lambda (x y)
+		      (when (matrix-get *matrix* x y)
+			(setf alive-count (add1 alive-count))))
+		  x0
+		  y0)
     alive-count))
 
 ;;; Draw
 ;;; ====
 
 (defun draw-matrix ()
-  (matrix-iterate #'(lambda (x y)
-		      (draw-cell x y (matrix-get x y)))
-		  *cells-count*))
+  (iterate #'(lambda (x y)
+	       (draw-cell x y (matrix-get *matrix* x y)))
+	   *cells-count*))
 
 (defun draw-cell (x y alive-p)
   (sdl:draw-box (sdl:rectangle-from-midpoint-* (* *cell-size* x)
@@ -95,13 +96,13 @@
 	  do (push (make-array size) matrix))
     matrix))
 
-(defun matrix-iterate (f size)
+(defun iterate (f size)
   (let ((bounds (sub1 size)))
     (loop for x from 0 to bounds
 	  do (loop for y from 0 to bounds
 		   do (funcall f x y)))))
 
-(defun matrix-iterate-near (f x y)
+(defun iterate-near (f x y)
   (let ((x0 (sub1 x))
 	(x2 (add1 x))
 	(y0 (sub1 y))
@@ -116,14 +117,13 @@
     (funcall f x y2))
   nil)
 
-(defun matrix-get (x y)
-  (elt (elt *matrix*
+(defun matrix-get (m x y)
+  (elt (elt m
 	    (matrix-translate x))
        (matrix-translate y)))
 
-(defun matrix-set (x y v)
-  ;(format t "~a:~a=~a " x y v)
-  (setf (elt (elt *matrix* x) y) v))
+(defun matrix-set (m x y v)
+  (setf (elt (elt m x) y) v))
 
 (defun matrix-translate (x)
   (if (= x *cells-count*)
