@@ -4,6 +4,9 @@
 (defstruct cell
   (state))
 
+(defun cell-create-random ()
+  (make-cell :state (= (random 10) 0)))
+
 (defun cell-is-stable (old-state count)
   (or (and old-state
 	   (or (= count 2) (= count 3)))
@@ -25,6 +28,6 @@
        (matrix-get-alive-as-number m x1 y2))))
 
 (defun matrix-get-alive-as-number (m x y)
-  (if (matrix-get m x y)
+  (if (cell-state (matrix-get m x y))
       1
     0))

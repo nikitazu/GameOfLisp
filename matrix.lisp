@@ -19,11 +19,11 @@
 (defun matrix-set (m x y v)
   (setf (elt (elt (matrix-items m) x) y) v))
 
-(defun matrix-copy (m1 m2)
+(defun matrix-copy (m1 m2 f)
   (iterate #'(lambda (x y)
 	       (matrix-set m2
 			   x y
-			   (matrix-get m1 x y)))
+			   (funcall f (matrix-get m1 x y))))
 	   (matrix-size m1)))
 
 (defun matrix-translate (m x)

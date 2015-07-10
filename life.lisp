@@ -30,7 +30,7 @@
     (:key-down-event () (sdl:push-quit-event))
     (:idle
      ()
-     (matrix-copy *matrix* *old-matrix*)
+     (matrix-copy *matrix* *old-matrix* #'copy-cell)
      (game-step)
      (sdl:update-display)))))
 
@@ -41,7 +41,7 @@
   (setf *matrix* (matrix-create *cells-count*))
   (setf *old-matrix* (matrix-create *cells-count*))
   (iterate #'(lambda (x y)
-	       (matrix-set *matrix* x y (= (random 10) 0)))
+	       (matrix-set *matrix* x y (cell-create-random)))
 	   *cells-count*)
   (setf *dead-color* (sdl:color :r 0 :g 0 :b 0))
   (setf *alive-color* (sdl:color :r 200 :g 0 :b 200)))
@@ -53,10 +53,11 @@
 (defun game-step ()
   (iterate #'(lambda (x y)
 	       (let ((count (cell-count-alive *old-matrix* x y))
-		     (old-state (matrix-get *old-matrix* x y)))
+		     (old-state (cell-state (matrix-get *old-matrix* x y))))
 		 (unless (cell-is-stable old-state count)
 		   (let ((new-state (not old-state)))
-		     (matrix-set *matrix* x y new-state)
+		     (setf (cell-state (matrix-get *matrix* x y))
+			   new-state)
 		     (draw-cell x y new-state)))))
 	   *cells-count*))
 
