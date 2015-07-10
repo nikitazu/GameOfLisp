@@ -2,7 +2,7 @@
 ;;; ======
 
 (defclass matrix ()
-  (items))
+  ((items :accessor matrix-items)))
 
 (defun matrix-create (size)
   (let ((matrix (make-array size))
@@ -10,15 +10,15 @@
     (loop for x from 0 to bounds
 	  do (push (make-array size) matrix))
     (let ((instance (make-instance 'matrix)))
-      (setf (slot-value instance 'items)
+      (setf (matrix-items instance)
 	    matrix)
       instance)))
 
 (defun matrix-get (m x y)
-  (elt (elt (slot-value m 'items) x) y))
+  (elt (elt (matrix-items m) x) y))
 
 (defun matrix-set (m x y v)
-  (setf (elt (elt (slot-value m 'items) x) y) v))
+  (setf (elt (elt (matrix-items m) x) y) v))
 
 (defun matrix-copy (m1 m2 count)
   (iterate #'(lambda (x y)
