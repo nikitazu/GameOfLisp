@@ -51,14 +51,15 @@
   (iterate #'(lambda (x y)
 	       (let ((count (game-count-alive x y))
 		     (alive (matrix-get *old-matrix* x y)))
-		 (if alive
-		     (if (or (= count 2) (= count 3))
-			 'survives
-		       (matrix-set *matrix* x y nil))
-		   (if (= count 3)
-		       (matrix-set *matrix* x y t)
-		     'left-empty))
-		 (draw-cell x y (matrix-get *matrix* x y))))
+
+		 (if (or (and alive
+			      (or (= count 2) (= count 3)))
+			 (and (not alive)
+			      (not (= count 3))))
+		     'stabilize
+		   (progn
+		     (matrix-set *matrix* x y (not alive))
+		     (draw-cell x y (matrix-get *matrix* x y))))))
 	   *cells-count*))
 
 (defun game-count-alive (x1 y1)
