@@ -27,6 +27,7 @@
     (:key-down-event () (sdl:push-quit-event))
     (:idle
      ()
+     (update-old-matrix)
      (game-step)
      (draw-matrix)
      (sdl:update-display)))))
@@ -36,8 +37,9 @@
   (setf *cells-count* 100)
   (setf *cell-size* (/ *pixel-size* *cells-count*))
   (setf *matrix* (matrix-create *cells-count*))
+  (setf *old-matrix* (matrix-create *cells-count*))
   (iterate #'(lambda (x y)
-	       (matrix-set *matrix* x y (= (random 2) 0)))
+	       (matrix-set *matrix* x y (= (random 10) 0)))
 	   *cells-count*)
   (setf *dead-color* (sdl:color :r 255 :g 0 :b 0))
   (setf *alive-color* (sdl:color :r 0 :g 0 :b 0)))
@@ -49,7 +51,7 @@
 (defun game-step ()
   (iterate #'(lambda (x y)
 	       (let ((count (game-count-alive x y))
-		     (alive (matrix-get *matrix* x y)))
+		     (alive (matrix-get *old-matrix* x y)))
 		 (if alive
 		     (if (or (= count 2) (= count 3))
 			 'survives
@@ -62,11 +64,18 @@
 (defun game-count-alive (x0 y0)
   (let ((alive-count 0))
     (iterate-near #'(lambda (x y)
-		      (when (matrix-get *matrix* x y)
+		      (when (matrix-get *old-matrix* x y)
 			(setf alive-count (add1 alive-count))))
 		  x0
 		  y0)
     alive-count))
+
+(defun update-old-matrix ()
+  (iterate #'(lambda (x y)
+	       (matrix-set *old-matrix*
+			   x y
+			   (matrix-get *matrix* x y)))
+	   *cells-count*))
 
 ;;; Draw
 ;;; ====
