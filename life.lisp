@@ -50,14 +50,14 @@
 (defun game-step ()
   (iterate #'(lambda (x y)
 	       (let ((count (game-count-alive x y))
-		     (alive (matrix-get *old-matrix* x y)))
-
-		 (when (not (or (and alive
-				     (or (= count 2) (= count 3)))
-				(and (not alive)
-				     (not (= count 3)))))
-		   (matrix-set *matrix* x y (not alive))
-		   (draw-cell x y (matrix-get *matrix* x y)))))
+		     (old-state (matrix-get *old-matrix* x y)))
+		 (unless (or (and old-state
+				  (or (= count 2) (= count 3)))
+			     (and (not old-state)
+				  (not (= count 3))))
+		   (let ((new-state (not old-state)))
+		     (matrix-set *matrix* x y new-state)
+		     (draw-cell x y new-state)))))
 	   *cells-count*))
 
 (defun game-count-alive (x1 y1)
