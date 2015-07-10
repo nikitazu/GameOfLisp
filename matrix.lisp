@@ -1,17 +1,23 @@
 ;;; Matrix
 ;;; ======
 
-(defstruct matrix
-  items
-  size)
+(defclass matrix ()
+  ((items :accessor matrix-items
+	  :documentation "Array of arrays of matrix elements")
+   (size :accessor matrix-size
+	 :initarg :size
+	 :documentation "Size of matrix (matrix is square)")))
+
+(defmethod initialize-instance :after ((m matrix) &key)
+  (let* ((size (matrix-size m))
+	 (bounds (sub1 size))
+	 (items (make-array size)))
+    (loop for x from 0 to bounds
+	  do (push (make-array size) items))
+    (setf (matrix-items m) items)))
 
 (defun matrix-create (size)
-  (let ((matrix (make-array size))
-	(bounds (sub1 size)))
-    (loop for x from 0 to bounds
-	  do (push (make-array size) matrix))
-    (make-matrix :items matrix
-		 :size size)))
+  (make-instance 'matrix :size size))
 
 (defun matrix-get (m x y)
   (elt (elt (matrix-items m) x) y))
