@@ -41,8 +41,8 @@
   (iterate #'(lambda (x y)
 	       (matrix-set *matrix* x y (= (random 10) 0)))
 	   *cells-count*)
-  (setf *dead-color* (sdl:color :r 255 :g 0 :b 0))
-  (setf *alive-color* (sdl:color :r 0 :g 0 :b 0)))
+  (setf *dead-color* (sdl:color :r 0 :g 0 :b 0))
+  (setf *alive-color* (sdl:color :r 200 :g 0 :b 200)))
 
 
 ;;; Game of Life
