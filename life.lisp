@@ -29,7 +29,6 @@
      ()
      (update-old-matrix)
      (game-step)
-     (draw-matrix)
      (sdl:update-display)))))
 
 (defun init-settings ()
@@ -58,7 +57,8 @@
 		       (matrix-set *matrix* x y nil))
 		   (if (= count 3)
 		       (matrix-set *matrix* x y t)
-		     'left-empty))))
+		     'left-empty))
+		 (draw-cell x y (matrix-get *matrix* x y))))
 	   *cells-count*))
 
 (defun game-count-alive (x1 y1)
@@ -89,11 +89,6 @@
 
 ;;; Draw
 ;;; ====
-
-(defun draw-matrix ()
-  (iterate #'(lambda (x y)
-	       (draw-cell x y (matrix-get *matrix* x y)))
-	   *cells-count*))
 
 (defun draw-cell (x y alive-p)
   (sdl:draw-box (sdl:rectangle-from-midpoint-* (* *cell-size* x)
