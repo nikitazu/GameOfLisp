@@ -17,12 +17,14 @@
 	(and (not state)
 	     (not (= count 3))))))
 
-(defun cell-update-state (m x y state)
-  (let ((c (matrix-get m x y)))
+(defun cell-update-state (m x y old-cell)
+  (let ((c (matrix-get m x y))
+	(state (not (cell-state old-cell))))
     (setf (cell-state c)
 	  state)
     (cell-near-update m x y
-		      (if state #'add1 #'sub1))))
+		      (if state #'add1 #'sub1))
+    state))
 
 (defun cell-near-update (m x1 y1 f)
   (let ((x0 (matrix-translate m (sub1 x1)))

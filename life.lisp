@@ -58,9 +58,8 @@
   (iterate #'(lambda (x y)
 	       (let ((c (matrix-get *old-matrix* x y)))
 		 (unless (cell-is-stable c)
-		   (let ((new-state (not (cell-state c))))
-		     (cell-update-state *matrix* x y new-state)
-		     (draw-cell x y new-state)))))
+		   (draw-cell x y
+			      (cell-update-state *matrix* x y c)))))
 	   *cells-count*))
 
 ;;; Draw
