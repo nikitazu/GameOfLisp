@@ -1,6 +1,7 @@
 (ql:quickload :lispbuilder-sdl)
 
 (load "matrix.lisp")
+(load "cell.lisp")
 
 ;;; Settigns
 ;;; ========
@@ -29,7 +30,7 @@
     (:key-down-event () (sdl:push-quit-event))
     (:idle
      ()
-     (update-old-matrix)
+     (matrix-copy *matrix* *old-matrix* *cells-count*)
      (game-step)
      (sdl:update-display)))))
 
@@ -51,41 +52,12 @@
 
 (defun game-step ()
   (iterate #'(lambda (x y)
-	       (let ((count (game-count-alive x y))
+	       (let ((count (cell-count-alive x y *cells-count*))
 		     (old-state (matrix-get *old-matrix* x y)))
-		 (unless (or (and old-state
-				  (or (= count 2) (= count 3)))
-			     (and (not old-state)
-				  (not (= count 3))))
+		 (unless (cell-is-stable old-state count)
 		   (let ((new-state (not old-state)))
 		     (matrix-set *matrix* x y new-state)
 		     (draw-cell x y new-state)))))
-	   *cells-count*))
-
-(defun game-count-alive (x1 y1)
-  (let ((x0 (matrix-translate (sub1 x1) *cells-count*))
-	(x2 (matrix-translate (add1 x1) *cells-count*))
-	(y0 (matrix-translate (sub1 y1) *cells-count*))
-	(y2 (matrix-translate (add1 y1) *cells-count*)))
-    (+ (matrix-get-alive-as-number x0 y0)
-       (matrix-get-alive-as-number x0 y1)
-       (matrix-get-alive-as-number x0 y2)
-       (matrix-get-alive-as-number x2 y0)
-       (matrix-get-alive-as-number x2 y1)
-       (matrix-get-alive-as-number x2 y2)
-       (matrix-get-alive-as-number x1 y0)
-       (matrix-get-alive-as-number x1 y2))))
-
-(defun matrix-get-alive-as-number (x y)
-  (if (matrix-get *old-matrix* x y)
-      1
-    0))
-
-(defun update-old-matrix ()
-  (iterate #'(lambda (x y)
-	       (matrix-set *old-matrix*
-			   x y
-			   (matrix-get *matrix* x y)))
 	   *cells-count*))
 
 ;;; Draw

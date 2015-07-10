@@ -20,6 +20,13 @@
 (defun matrix-set (m x y v)
   (setf (elt (elt (slot-value m 'items) x) y) v))
 
+(defun matrix-copy (m1 m2 count)
+  (iterate #'(lambda (x y)
+	       (matrix-set m2
+			   x y
+			   (matrix-get m1 x y)))
+	   count))
+
 (defun matrix-translate (x count)
   (if (= x count)
       0
