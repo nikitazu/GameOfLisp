@@ -9,10 +9,7 @@
 	(bounds (sub1 size)))
     (loop for x from 0 to bounds
 	  do (push (make-array size) matrix))
-    (let ((instance (make-instance 'matrix)))
-      (setf (matrix-items instance)
-	    matrix)
-      instance)))
+    (make-matrix :items matrix)))
 
 (defun matrix-get (m x y)
   (elt (elt (matrix-items m) x) y))
