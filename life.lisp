@@ -56,10 +56,9 @@
 
 (defun game-step ()
   (iterate #'(lambda (x y)
-	       (let ((count (cell-count (matrix-get *old-matrix* x y)))
-		     (old-state (cell-state (matrix-get *old-matrix* x y))))
-		 (unless (cell-is-stable old-state count)
-		   (let ((new-state (not old-state)))
+	       (let ((c (matrix-get *old-matrix* x y)))
+		 (unless (cell-is-stable c)
+		   (let ((new-state (not (cell-state c))))
 		     (cell-update-state *matrix* x y new-state)
 		     (draw-cell x y new-state)))))
 	   *cells-count*))

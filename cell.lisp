@@ -9,11 +9,13 @@
   (make-cell :state (= (random 10) 0)
 	     :count 0))
 
-(defun cell-is-stable (old-state count)
-  (or (and old-state
-	   (or (= count 2) (= count 3)))
-      (and (not old-state)
-	   (not (= count 3)))))
+(defun cell-is-stable (c)
+  (let ((count (cell-count c))
+	(state (cell-state c)))
+    (or (and state
+	     (or (= count 2) (= count 3)))
+	(and (not state)
+	     (not (= count 3))))))
 
 (defun cell-update-state (m x y state)
   (let ((c (matrix-get m x y)))
