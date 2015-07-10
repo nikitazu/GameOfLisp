@@ -34,6 +34,11 @@
 	  (sub1 s)
 	x))))
 
+(defun matrix-iterate (m f)
+  (iterate #'(lambda (x y)
+	       (funcall f x y (matrix-get m x y)))
+	   (matrix-size m)))
+
 ;;; Utils
 ;;; =====
 
