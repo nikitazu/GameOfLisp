@@ -15,6 +15,13 @@
       (and (not old-state)
 	   (not (= count 3)))))
 
+(defun cell-update-state (m x y state)
+  (let ((c (matrix-get m x y)))
+    (setf (cell-state c)
+	  state)
+    (cell-near-update m x y
+		      (if state #'add1 #'sub1))))
+
 (defun cell-near-update (m x1 y1 f)
   (let ((x0 (matrix-translate m (sub1 x1)))
 	(x2 (matrix-translate m (add1 x1)))
@@ -29,31 +36,7 @@
     (matrix-update-count m x1 y0 f)
     (matrix-update-count m x1 y2 f)))
 
-(defun matrix-update-state (m x y state)
-  (let ((c (matrix-get m x y)))
-    (setf (cell-state c)
-	  state)))
-
 (defun matrix-update-count (m x y f)
   (let ((c (matrix-get m x y)))
     (setf (cell-count c)
 	  (funcall f (cell-count c)))))
-
-(defun cell-count-alive (m x1 y1)
-  (let ((x0 (matrix-translate m (sub1 x1)))
-	(x2 (matrix-translate m (add1 x1)))
-	(y0 (matrix-translate m (sub1 y1)))
-	(y2 (matrix-translate m (add1 y1))))
-    (+ (matrix-get-alive-as-number m x0 y0)
-       (matrix-get-alive-as-number m x0 y1)
-       (matrix-get-alive-as-number m x0 y2)
-       (matrix-get-alive-as-number m x2 y0)
-       (matrix-get-alive-as-number m x2 y1)
-       (matrix-get-alive-as-number m x2 y2)
-       (matrix-get-alive-as-number m x1 y0)
-       (matrix-get-alive-as-number m x1 y2))))
-
-(defun matrix-get-alive-as-number (m x y)
-  (if (cell-state (matrix-get m x y))
-      1
-    0))

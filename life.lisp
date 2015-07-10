@@ -60,9 +60,7 @@
 		     (old-state (cell-state (matrix-get *old-matrix* x y))))
 		 (unless (cell-is-stable old-state count)
 		   (let ((new-state (not old-state)))
-		     (setf (cell-state (matrix-get *matrix* x y))
-			   new-state)
-		     (cell-near-update *matrix* x y (if new-state #'add1 #'sub1))
+		     (cell-update-state *matrix* x y new-state)
 		     (draw-cell x y new-state)))))
 	   *cells-count*))
 
