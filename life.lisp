@@ -62,10 +62,10 @@
 	   *cells-count*))
 
 (defun game-count-alive (x1 y1)
-  (let ((x0 (sub1 x1))
-	(x2 (add1 x1))
-	(y0 (sub1 y1))
-	(y2 (add1 y1)))
+  (let ((x0 (matrix-translate (sub1 x1)))
+	(x2 (matrix-translate (add1 x1)))
+	(y0 (matrix-translate (sub1 y1)))
+	(y2 (matrix-translate (add1 y1))))
     (+ (matrix-get-alive-as-number x0 y0)
        (matrix-get-alive-as-number x0 y1)
        (matrix-get-alive-as-number x0 y2)
@@ -117,9 +117,7 @@
 		   do (funcall f x y)))))
 
 (defun matrix-get (m x y)
-  (elt (elt m
-	    (matrix-translate x))
-       (matrix-translate y)))
+  (elt (elt m x) y))
 
 (defun matrix-set (m x y v)
   (setf (elt (elt m x) y) v))
