@@ -6,7 +6,7 @@
   count)
 
 (defun cell-create-random ()
-  (make-cell :state (= (random 10) 0)
+  (make-cell :state (= (random *randomness*) 0)
 	     :count 0))
 
 (defun cell-is-stable (c)
